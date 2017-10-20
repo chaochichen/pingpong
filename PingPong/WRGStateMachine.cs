@@ -255,9 +255,10 @@ namespace PingPong
             {
                 Console.Write("C");
                 Peer = new TcpClient();
-                IAsyncResult ar = Peer.ConnectAsync(PeerHost, PeerPort);
-                System.Threading.WaitHandle wh = ar.AsyncWaitHandle;
-                if (!ar.AsyncWaitHandle.WaitOne(TimeSpan.FromMilliseconds(1200)))
+                Task ar = Peer.ConnectAsync(PeerHost, PeerPort);
+                System.Threading.WaitHandle wh = ((IAsyncResult)ar).AsyncWaitHandle;
+                bool signaled = wh.WaitOne(TimeSpan.FromMilliseconds(1200));
+                if (!signaled || !Peer.Connected)
                 {
                     Console.Write("x");
                 }
