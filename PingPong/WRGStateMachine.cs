@@ -282,8 +282,15 @@ namespace PingPong
         {
             var server = Dns.GetHostName();
             var heserver = await Dns.GetHostEntryAsync(server);
-            var ipAddress = heserver.AddressList[2];
-            var ep = new IPEndPoint(ipAddress, MyPort);
+            IPEndPoint ep = null;
+            foreach(var ip in heserver.AddressList)
+            {
+                if (ip != null && ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    ep = new IPEndPoint(ip, MyPort);
+                    break;
+                }
+            }
             try
             {
                 pingListener = new TcpListener(ep);
